@@ -63,10 +63,10 @@ const View = {
       el.after(button);
       this.elements.downloadButtons.push(button);
     });
-    console.log("injected!", this.elements.fileLists);
+    // console.log("injected!", this.elements.fileLists);
   },
   bindEvent() {
-    console.log("this.elements.downloadButtons", this.elements.downloadButtons);
+    // console.log("this.elements.downloadButtons", this.elements.downloadButtons);
     this.elements.downloadButtons.forEach((button) => {
       button.addEventListener("click", this.handlerDownload);
     });
