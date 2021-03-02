@@ -1,12 +1,11 @@
 const Loader = {
-  reqId: null,
   init() {
-    cancelAnimationFrame(this.reqId);
     this.delayStartTimestamp = Date.now();
     this.checkLoad();
     console.log(`${this.config.title} 탐색 시작`);
   },
   data: {
+    reqId: null,
     prev: {
       url: null,
     },
@@ -16,6 +15,11 @@ const Loader = {
     delay: 30000,
     idSelector: "",
     containerSelector: "",
+  },
+  destroy() {
+    cancelAnimationFrame(this.data.reqId);
+    this.data.reqId = null;
+    this.data.prev.url = null;
   },
   watch(config) {
     Loader.init();
@@ -30,8 +34,9 @@ const Loader = {
         idElement &&
         idElement.innerText !== this.data.prev.id
       ) {
-        Loader.init();
+        this.destroy();
         View.destroy();
+        this.init();
         this.data.prev.url = location.href;
       }
     }, 1000);
@@ -44,10 +49,10 @@ const Loader = {
       );
       return;
     } else {
-      console.log(`${this.config.title} 여부 탐색중...`);
+      console.log(`${this.config.title} 탐색중...`);
     }
 
-    this.reqId = requestAnimationFrame(() => {
+    this.data.reqId = requestAnimationFrame(() => {
       if (!document.querySelector(this.config.containerSelector)) {
         this.checkLoad();
       } else {
