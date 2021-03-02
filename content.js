@@ -7,6 +7,7 @@ const Loader = {
   data: {
     reqId: null,
     prev: {
+      id: null,
       url: null,
     },
   },
@@ -20,6 +21,7 @@ const Loader = {
     cancelAnimationFrame(this.data.reqId);
     this.data.reqId = null;
     this.data.prev.url = null;
+    this.data.prev.id = null;
   },
   watch(config) {
     Loader.init();
@@ -41,6 +43,11 @@ const Loader = {
       }
     }, 1000);
   },
+  moreHistory() {
+    this.destroy();
+    View.destroy();
+    this.init();
+  },
   checkLoad() {
     if (Date.now() - this.delayStartTimestamp > 3000) {
       console.log(
@@ -48,12 +55,11 @@ const Loader = {
         Date.now() - this.delayStartTimestamp
       );
       return;
-    } else {
-      console.log(`${this.config.title} 탐색중...`);
     }
 
     this.data.reqId = requestAnimationFrame(() => {
       if (!document.querySelector(this.config.containerSelector)) {
+        console.log(`${this.config.title} 탐색중...`);
         this.checkLoad();
       } else {
         console.log(`${this.config.title} 탐색 성공!`);
@@ -81,6 +87,12 @@ const View = {
       el.removeEventListener("click", this.handlerDownload);
       el.remove();
     });
+    if (this.elements.moreHistoryButton) {
+      this.elements.moreHistoryButton.removeEventListener(
+        "click",
+        this.handlerMoreHistory
+      );
+    }
     this.elements.fileLists = [];
     this.elements.downloadButtons = [];
   },
@@ -96,12 +108,24 @@ const View = {
       button.innerText = "첨부파일 모두 받기";
       el.after(button);
       this.elements.downloadButtons.push(button);
+      this.elements.moreHistoryButton = document.querySelector(
+        ".history-list-more"
+      );
     });
   },
   bindEvent() {
-    this.elements.downloadButtons.forEach((button) => {
+    const { downloadButtons, moreHistoryButton } = this.elements;
+    downloadButtons.forEach((button) => {
       button.addEventListener("click", this.handlerDownload);
     });
+    if (moreHistoryButton) {
+      moreHistoryButton.addEventListener("click", this.handlerMoreHistory);
+    }
+  },
+  handlerMoreHistory() {
+    setTimeout(() => {
+      Loader.moreHistory();
+    }, 1000);
   },
   handlerDownload(e) {
     const prevFileList = e.target.previousSibling;
