@@ -6,7 +6,10 @@
   "permissions": ["activeTab", "scripting"],
   "content_scripts": [
     {
-      "matches": ["https://nhnent.dooray.com/project/*"],
+      "matches": [
+        "*://nhnent.dooray.com/project/*",
+        "*://nhnent.dooray.com/*/project/*"
+      ],
       "run_at": "document_end",
       "css": ["content.css"],
       "js": ["content.js"]
